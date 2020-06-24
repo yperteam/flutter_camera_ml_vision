@@ -56,8 +56,12 @@ class CameraMlVision<T> extends StatefulWidget {
     this.onDispose,
   }) : super(key: key);
 
+  CameraMlVisionState state = CameraMlVisionState<T>();
+
   @override
-  CameraMlVisionState createState() => CameraMlVisionState<T>();
+  CameraMlVisionState createState() => state;
+
+  void flashController(bool isEnabled) => state.flash(isEnabled);
 }
 
 class CameraMlVisionState<T> extends State<CameraMlVision<T>>
@@ -149,6 +153,13 @@ class CameraMlVisionState<T> extends State<CameraMlVision<T>>
     setState(() {
       _isStreaming = true;
     });
+  }
+
+  void flash(bool isEnabled) {
+    print('tez: _cameraController != null ${_cameraController != null} , isEnabled = $isEnabled');
+    if(_cameraController != null){
+    _cameraController.flash(isEnabled);
+    }
   }
 
   CameraValue get cameraValue => _cameraController?.value;
