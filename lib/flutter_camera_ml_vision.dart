@@ -2,6 +2,7 @@ library flutter_camera_ml_vision;
 
 import 'dart:async';
 import 'dart:io';
+import 'dart:math';
 import 'dart:typed_data';
 import 'dart:ui';
 
@@ -13,6 +14,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_widgets/flutter_widgets.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:image/image.dart' as IMG;
 
 export 'package:camera/camera.dart';
 
@@ -297,16 +299,7 @@ class CameraMlVisionState<T> extends State<CameraMlVision<T>>
       );
     }
     return VisibilityDetector(
-      child: FittedBox(
-        alignment: Alignment.center,
-        fit: BoxFit.cover,
-        child: SizedBox(
-          width: _cameraController.value.previewSize.height *
-              _cameraController.value.aspectRatio,
-          height: _cameraController.value.previewSize.height,
-          child: cameraPreview,
-        ),
-      ),
+      child: cameraPreview,
       onVisibilityChanged: (VisibilityInfo info) {
         if (info.visibleFraction == 0) {
           //invisible stop the streaming
@@ -325,15 +318,22 @@ class CameraMlVisionState<T> extends State<CameraMlVision<T>>
   void _processImage(CameraImage cameraImage) async {
     if (!_alreadyCheckingImage && mounted) {
       _alreadyCheckingImage = true;
+      print('tez: cameraImage: ${cameraImage.planes.length}');
       try {
         final T results =
-            await _detect<T>(cameraImage, widget.detector, _rotation);
+            await _detect<T>(_cropImage(cameraImage), widget.detector, _rotation);
         widget.onResult(results);
       } catch (ex, stack) {
         debugPrint('$ex, $stack');
       }
       _alreadyCheckingImage = false;
     }
+  }
+
+  Uint8List _concatenatePlanes(List<Plane> planes) {
+    final WriteBuffer allBytes = WriteBuffer();
+    planes.forEach((plane) => allBytes.putUint8List(plane.bytes));
+    return allBytes.done().buffer.asUint8List();
   }
 
   void toggle() {
