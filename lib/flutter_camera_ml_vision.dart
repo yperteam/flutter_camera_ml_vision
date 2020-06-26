@@ -318,10 +318,9 @@ class CameraMlVisionState<T> extends State<CameraMlVision<T>>
   void _processImage(CameraImage cameraImage) async {
     if (!_alreadyCheckingImage && mounted) {
       _alreadyCheckingImage = true;
-      print('tez: cameraImage: ${cameraImage.planes.length}');
       try {
         final T results =
-            await _detect<T>(_cropImage(cameraImage), widget.detector, _rotation);
+            await _detect<T>(cameraImage, widget.detector, _rotation);
         widget.onResult(results);
       } catch (ex, stack) {
         debugPrint('$ex, $stack');
@@ -329,13 +328,6 @@ class CameraMlVisionState<T> extends State<CameraMlVision<T>>
       _alreadyCheckingImage = false;
     }
   }
-
-  Uint8List _concatenatePlanes(List<Plane> planes) {
-    final WriteBuffer allBytes = WriteBuffer();
-    planes.forEach((plane) => allBytes.putUint8List(plane.bytes));
-    return allBytes.done().buffer.asUint8List();
-  }
-
   void toggle() {
     if (_isStreaming && _cameraController.value.isStreamingImages) {
       stop();
