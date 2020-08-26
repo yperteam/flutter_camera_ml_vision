@@ -2,7 +2,6 @@ library flutter_camera_ml_vision;
 
 import 'dart:async';
 import 'dart:io';
-import 'dart:math';
 import 'dart:typed_data';
 import 'dart:ui';
 
@@ -14,7 +13,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_widgets/flutter_widgets.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:image/image.dart' as IMG;
 
 export 'package:camera/camera.dart';
 
